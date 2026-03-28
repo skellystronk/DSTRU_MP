@@ -26,16 +26,20 @@ void removePos(int Rpos, int Cpos, bool *go, int R[3][3], int B[3][3], int S[3][
 void Expand(int Rpos, int Cpos, bool *found, bool *go, int R[3][3], int B[3][3], int S[3][3], int T[3][3])
 {
     //explode
-    removePos(Rpos, Cpos, (bool*) go, R, B, S, T);
+    removePos(Rpos, Cpos, go, R, B, S, T);
 
     //MOVEMENT
-    Replace(Rpos - 1, Cpos, go, found, R, B, S, T); //UP
-    Replace(Rpos + 1, Cpos, go, found, R, B, S, T); //DOWN
+    if (*go)
+        Replace(Rpos - 1, Cpos, go, found, R, B, S, T); //UP
+    
+    else
+        Replace(Rpos + 1, Cpos, go, found, R, B, S, T); //DOWN
+    
     Replace(Rpos, Cpos - 1, go, found, R, B, S, T); //LEFT
     Replace(Rpos, Cpos + 1, go, found, R, B, S, T); //RIGHT
 }
 
-//this function moves players
+//this function lets R and B to capture each other
 void Replace(int Rpos, int Cpos, bool *go, bool *found, int R[3][3], int B[3][3], int S[3][3], int T[3][3])
 {
     if (Cpos >= 0 && Cpos < 3 && Rpos >= 0 && Rpos < 3)
@@ -49,15 +53,17 @@ void Replace(int Rpos, int Cpos, bool *go, bool *found, int R[3][3], int B[3][3]
             //if red will move to a spot taken by blue
             if (B[Rpos][Cpos] == 1) //if space is taken by blue
             {
-                B[Rpos][Cpos] = 0;  //remove blue piece(?)
-                *found = 1;         //i still dont know how found helps in expand
+                B[Rpos][Cpos] = 0;  //remove/capture blue piece
+                *found = true;         //i still dont know how found helps in expand
             }
 
             //if red will only move
             else if (R[Rpos][Cpos] == 0)    //spot isn't taken
-            {
                 R[Rpos][Cpos] = 1;          //take that spot
-            }
+            
+
+            else if (R[Rpos][Cpos] == 1)    //spot is taken by red
+                *found = true;              //add to counter of expand(?)
         }
 
         //blue's turn
@@ -66,15 +72,17 @@ void Replace(int Rpos, int Cpos, bool *go, bool *found, int R[3][3], int B[3][3]
             //if blue will move to a spot taken by red
             if (R[Rpos][Cpos] == 1) //if space is taken by red
             {
-                R[Rpos][Cpos] = 0;  //remove red piece(?)
-                *found = 1;         //idk how found will help here
+                R[Rpos][Cpos] = 0;  //remove/capture red piece
+                *found = true;         
             }
 
             //if blue will only move
             else if (B[Rpos][Cpos] == 0)    //spot isnt taken
-            {
                 B[Rpos][Cpos] = 1;          //take spot
-            }
+            
+
+            else if (B[Rpos][Cpos] == 1)
+                *found = true;
         }
 
         //for S T and expand(?)
@@ -83,7 +91,7 @@ void Replace(int Rpos, int Cpos, bool *go, bool *found, int R[3][3], int B[3][3]
             //baks di ko gets
             if (S[Rpos][Cpos] == 0)
             {
-                S[Rpos][Cpos] = 1; // S = S U {pos} ^
+                S[Rpos][Cpos] = 1; // S = S U {pos} ^ found
                 *found = 0;        // found = false
             }
 
@@ -201,9 +209,9 @@ void GamerOver(int val, int R[3][3], int B[3][3])
 bool isSystemOver(int val, int countR, int countB, bool start)
 {
     int countF = 9 - (countR + countB); //F = empty space
-    bool ahead = ((countR > 0 && countB == 0) || (countR == 0 && countB > 0));
+    bool ahead = (!start && ((countR > 0 && countB == 0) || (countR == 0 && countB > 0)));
 
-    if (countF == 3 || val >= 20 || (!start && ahead))
+    if (countF == 3 || val >= 20 || ahead)
         return true;
 
     return false;
@@ -281,7 +289,11 @@ int main()
             printf(" INVALID INPUT! ");
             while (getchar() != '\n'); //clear buffer
         }
-
+        else if (Rpos < 0 || Rpos > 2 || Cpos < 0 || Cpos > 2) // if input is out of bounds
+        {
+            printf("INVALID INPUT!\n");
+        }
+        
         else
         {
         NextPlayerMove(Rpos, Cpos, R, B, S, T, &good, &go, &val, &start, over, &found);
@@ -292,10 +304,13 @@ int main()
 
         //Update(Rpos, Cpos, &good, &go, &found, R[3][3], B[3][3], S[3][3], T[3][3]);
         over = isSystemOver(val, countSet(R), countSet(B), start);
-        }
-
-        gridDisplay(R, B);
-        GamerOver(val, R, B);
+        
+        //if game is over
+            if(over)
+            {
+                gridDisplay(R, B); // display final grid
+                GamerOver(val, R, B); // printf winner or draw
+            }
     }
     return 0;
 }
