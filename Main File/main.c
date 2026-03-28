@@ -311,6 +311,7 @@ int main()
                 gridDisplay(R, B); // display final grid
                 GamerOver(val, R, B); // printf winner or draw
             }
+        }
     }
     return 0;
 }
