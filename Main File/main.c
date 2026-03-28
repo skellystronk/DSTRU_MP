@@ -73,7 +73,7 @@ void Replace(int Rpos, int Cpos, bool *go, bool *found, int R[3][3], int B[3][3]
             if (R[Rpos][Cpos] == 1) //if space is taken by red
             {
                 R[Rpos][Cpos] = 0;  //remove/capture red piece
-                *found = true;         
+                *found = true;
             }
 
             //if blue will only move
@@ -293,7 +293,7 @@ int main()
         {
             printf("INVALID INPUT!\n");
         }
-        
+
         else
         {
         NextPlayerMove(Rpos, Cpos, R, B, S, T, &good, &go, &val, &start, over, &found);
