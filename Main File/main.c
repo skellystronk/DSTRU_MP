@@ -29,10 +29,10 @@ void Expand(int Rpos, int Cpos, bool *found, bool *go, int R[3][3], int B[3][3],
     removePos(Rpos, Cpos, go, R, B, S, T);
 
     //MOVEMENT
-    if (*go)
+    if (*go) //red can go up but not down
         Replace(Rpos - 1, Cpos, go, found, R, B, S, T); //UP
     
-    else
+    else     //blue can go down, but not up
         Replace(Rpos + 1, Cpos, go, found, R, B, S, T); //DOWN
     
     Replace(Rpos, Cpos - 1, go, found, R, B, S, T); //LEFT
@@ -54,7 +54,7 @@ void Replace(int Rpos, int Cpos, bool *go, bool *found, int R[3][3], int B[3][3]
             if (B[Rpos][Cpos] == 1) //if space is taken by blue
             {
                 B[Rpos][Cpos] = 0;  //remove/capture blue piece
-                *found = true;         //i still dont know how found helps in expand
+                *found = true;         //i still dont know how found helps in expand OHHH like interaction happened here
             }
 
             //if red will only move
@@ -98,14 +98,14 @@ void Replace(int Rpos, int Cpos, bool *go, bool *found, int R[3][3], int B[3][3]
             //baks di ko gets
             else if (S[Rpos][Cpos] == 1 && T[Rpos][Cpos] == 0)
             {
-                T[Rpos][Cpos] = 1; // T = T U {pso}
-                Expand(Rpos, Cpos, found, go, R, B, S, T);
+                T[Rpos][Cpos] = 1; // stay here
+                Expand(Rpos, Cpos, found, go, R, B, S, T); //expand/explode
             }
         }
     }
 }
 
-
+//what happens when a piece is on the board(?) is it first turn
 void Update(int Rpos, int Cpos, bool *good, bool *go, bool *found, int R[3][3], int B[3][3], int S[3][3], int T[3][3])
 {
     //Stated in specs (refresh)
