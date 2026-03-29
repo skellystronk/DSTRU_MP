@@ -189,7 +189,8 @@ void GamerOver(int val, int R[3][3], int B[3][3])
 {
     int countR = countSet(R);   //counts score of Red
     int countB = countSet(B);   //counts score of Blue
-
+	
+	// val/turns reached 20 ||     more red than blue     || more blue than red
     bool over = (val >= 20 || (countR > 0 && countB == 0) || (countR == 0 && countB > 0));
 
     if(over)
@@ -211,7 +212,8 @@ bool isSystemOver(int val, int countR, int countB, bool start)
     int countF = 9 - (countR + countB); //F = empty space
     bool ahead = (!start && ((countR > 0 && countB == 0) || (countR == 0 && countB > 0)));
 
-    if (countF == 3 || val >= 20 || ahead)
+	// there are 3 empty spaces left || val/turns reached 20 || ahead
+    if (countF <= 3 || val >= 20 || ahead)
         return true;
 
     return false;
