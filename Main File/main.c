@@ -82,7 +82,7 @@ void Replace(int Rpos, int Cpos, bool *go, bool *found, int R[3][3], int B[3][3]
             
 
             else if (B[Rpos][Cpos] == 1)
-                *found = true;
+                *found = true;              //add to counter for expand
         }
 
         //for S T and expand(?)
@@ -144,7 +144,7 @@ void NextPlayerMove(int Rpos, int Cpos, int R[3][3], int B[3][3], int S[3][3], i
     }
 
     // Case 3 : starting phase
-    if (!over && !(*start) && ((*go && R[Rpos][Cpos]) || (!*go && B[Rpos][Cpos])))
+    else if (!over && !(*start) && ((*go && R[Rpos][Cpos]) || (!*go && B[Rpos][Cpos])))
     {
         Update(Rpos, Cpos, good, go, found, R, B, S, T); // calling update function
         *good = true;
@@ -190,8 +190,8 @@ void GamerOver(int val, int R[3][3], int B[3][3])
     int countR = countSet(R);   //counts score of Red
     int countB = countSet(B);   //counts score of Blue
 	
-	// val/turns reached 20 ||     more red than blue     || more blue than red
-    bool over = (val >= 20 || (countR > 0 && countB == 0) || (countR == 0 && countB > 0));
+	// turns reached 20    ||     more red than blue      ||     more blue than red      ||        Free space  <= 3
+    bool over = (val >= 20 || (countR > 0 && countB == 0) || (countR == 0 && countB > 0) || (9 - (countR + countB) <= 3));
 
     if(over)
     {
@@ -250,13 +250,14 @@ void gridDisplay(int R[3][3], int B[3][3])
 int main()
 {
     //game flags
+    //   valid move  player turn starting phase  game done     capture?
     bool good = false, go = true, start = true, over = false, found = false;
 
-    //coords of each variable
+    //  red            blue           explosion cnt   empty space   explosion stopper(?)
     int R[3][3] = {0}, B[3][3] = {0}, S[3][3] = {0}, F[3][3] = {0}, T[3][3] = {0};
     int Rpos, Cpos;
 
-    //number of turns(?)
+    //number of turns
     int val = 0;
 
     //position
